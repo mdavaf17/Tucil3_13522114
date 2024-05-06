@@ -38,11 +38,12 @@ public class GBFS {
                 return new App.Pair<>(visited.size() + 1, Arrays.asList(currentNode.get_path_from_root().split(" ")));
             }
 
+            visited.add(currentNode.getWord());
+
             for (String nextWord : App.getNeighbor(currentWord)) {
                 if (!visited.contains(nextWord)) {
                     Node nextNode = new Node(nextWord, currentNode);
                     prioQueue.offer(nextNode);
-                    visited.add(nextWord);
                 }
             }
         }
