@@ -18,7 +18,7 @@ public class App extends JFrame {
     public App() {
         setTitle("Word Ladder Solver");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 300);
+        setSize(400, 400);
         setLayout(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new GridLayout(4, 2));
@@ -64,11 +64,13 @@ public class App extends JFrame {
 
         // Check for valid input and dictionary initialization
         if (!isValidInput(startWord, endWord)) {
+            resultPane.setText("Invalid input or dictionary not initialized.");
             return;
         }
 
         // Check if the start word and the end word are in the dictionary
         if (!dictionary.contains(startWord) || !dictionary.contains(endWord)) {
+            resultPane.setText("Start word or end word not in the dictionary.");
             return;
         }
 
@@ -124,7 +126,7 @@ public class App extends JFrame {
 
         endTime = System.currentTimeMillis();
         executionTime = endTime - startTime;
-        result.append("\nExecution time: ").append(executionTime).append(" milliseconds\n");
+        result.append("<br>" + wordLadder.getFirst() + " node has been visited in " + executionTime + " ms.");
 
         resultPane.setText(result.toString());
     }
@@ -157,17 +159,8 @@ public class App extends JFrame {
                 }
             }
             scanner.close();
-
-            // Check if the dictionary is empty
-            if (dictionary.isEmpty()) {
-                System.out.println("The dictionary is empty.");
-            } else {
-                System.out.println("Dictionary length: " + dictionary.size());
-            }
-        } catch (FileNotFoundException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
+        } 
+        catch (FileNotFoundException e) {}
     }
 
     public static void main(String[] args) {
