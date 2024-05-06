@@ -18,27 +18,72 @@ public class App extends JFrame {
     public App() {
         setTitle("Word Ladder Solver");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(400, 400);
+        setSize(450, 400);
         setLayout(new BorderLayout());
 
-        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
-        inputPanel.add(new JLabel("Start Word:"));
+        JPanel inputPanel = new JPanel(new GridBagLayout());
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 5, 5, 5);
+
+        JLabel startLabel = new JLabel("Start Word:");
+        startLabel.setFont(startLabel.getFont().deriveFont(13.0f)); // Set font size to 13
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.anchor = GridBagConstraints.WEST;
+        inputPanel.add(startLabel, gbc);
+
         startWordField = new JTextField();
-        inputPanel.add(startWordField);
-        inputPanel.add(new JLabel("End Word:"));
+        startWordField.setFont(startWordField.getFont().deriveFont(13.0f)); // Set font size to 13
+        gbc.gridx = 1;
+        gbc.gridy = 0;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 2; // Column span for text field
+        inputPanel.add(startWordField, gbc);
+
+        JLabel endLabel = new JLabel("End Word:");
+        endLabel.setFont(endLabel.getFont().deriveFont(13.0f)); // Set font size to 13
+        gbc.gridx = 0;
+        gbc.gridy = 1;
+        gbc.weightx = 0.0;
+        gbc.gridwidth = 1; // Reset column span
+        inputPanel.add(endLabel, gbc);
+
         endWordField = new JTextField();
-        inputPanel.add(endWordField);
-        inputPanel.add(new JLabel("Search Algorithm:"));
-        String[] algorithms = {"UCS", "GBF", "A*"};
+        endWordField.setFont(endWordField.getFont().deriveFont(13.0f)); // Set font size to 13
+        gbc.gridx = 1;
+        gbc.gridy = 1;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 2; // Column span for text field
+        inputPanel.add(endWordField, gbc);
+
+        JLabel algorithmLabel = new JLabel("Algorithm:");
+        algorithmLabel.setFont(algorithmLabel.getFont().deriveFont(13.0f)); // Set font size to 13
+        gbc.gridx = 0;
+        gbc.gridy = 2;
+        gbc.weightx = 0.0;
+        gbc.gridwidth = 1; // Reset column span
+        inputPanel.add(algorithmLabel, gbc);
+
+        String[] algorithms = {"Uniform Cost Search (UCS)", "Greedy Best First Search (GBFS)", "A* Search"};
         algorithmComboBox = new JComboBox<>(algorithms);
-        inputPanel.add(algorithmComboBox);
+        gbc.gridx = 1;
+        gbc.gridy = 2;
+        gbc.weightx = 1.0;
+        gbc.gridwidth = 2; // Column span for combo box
+        inputPanel.add(algorithmComboBox, gbc);
+
         JButton searchButton = new JButton("Search");
-        inputPanel.add(searchButton);
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.gridwidth = 3; // Column span for search button
+        inputPanel.add(searchButton, gbc);
+
         add(inputPanel, BorderLayout.NORTH);
 
         resultPane = new JTextPane(); // Initialize the text area
         resultPane.setContentType("text/html"); // Set content type to HTML
-        resultPane.setText("<style> body { text-align: center; } </style>");
+        resultPane.setText("<style> body { text-align: center; font-size: 16pt; } </style>"); // Set font size to 16pt
         JScrollPane scrollPane = new JScrollPane(resultPane); // Add scroll pane to handle large text
         add(scrollPane, BorderLayout.CENTER);
 
@@ -81,19 +126,19 @@ public class App extends JFrame {
         App.Pair<Integer, List<String>> wordLadder = null;
 
         switch (searchAlgorithm) {
-            case "UCS":
+            case "Uniform Cost Search (UCS)":
                 UCS ucs = new UCS(endWord);
                 ExtendedNode startUCSNode = new ExtendedNode(startWord, null, 0);
                 wordLadder = ucs.search(startUCSNode);
 
                 break;
-            case "GBF":
+            case "Greedy Best First Search (GBFS)":
                 GBFS gbfs = new GBFS(endWord);
                 Node startGFBSNode = new Node(startWord, null);
                 wordLadder = gbfs.search(startGFBSNode);
 
                 break;
-            case "A*":
+            case "A* Search":
                 AStar astar = new AStar(endWord);
                 ExtendedNode startAStarNode = new ExtendedNode(startWord, null, 0);
                 wordLadder = astar.search(startAStarNode);
@@ -109,10 +154,10 @@ public class App extends JFrame {
             for (int i = 0; i < size; i++) {
                 String word = wordLadder.getSecond().get(i);
                 if (i == size - 1) {
-                    result.append("<font color='green'>").append(word).append("</font>");
+                    result.append("<font color='green'>[" + i + "] " + word + "</font>");
                 }
                 else if (i == 0) {
-                    result.append("<font color='blue'>").append(word).append("</font>");
+                    result.append("<font color='blue'>[" + i + "] " + word + "</font>");
                 }
                 else {
                     result.append(word);
