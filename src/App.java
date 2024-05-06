@@ -1,113 +1,148 @@
 import java.util.*;
+import java.util.List;
 import java.io.File;
 import java.io.FileNotFoundException;
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-public class App {
+public class App extends JFrame {
     public static Set<String> dictionary;
 
-    public static void main(String[] args) {
-        while (true) {
-            System.out.print("Input the Start Word: ");
-            String startWord = System.console().readLine().toUpperCase();
+    private JTextField startWordField;
+    private JTextField endWordField;
+    private JComboBox<String> algorithmComboBox;
+    private JTextPane resultPane; // Text area to display ladder information
 
-            System.out.print("Input the End Word: ");
-            String endWord = System.console().readLine().toUpperCase();
+    public App() {
+        setTitle("Word Ladder Solver");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setSize(400, 300);
+        setLayout(new BorderLayout());
 
-            System.out.print("Input the Search Algorithm (UCS / GBF / A*): ");
-            String searchAlgorithm = System.console().readLine().toUpperCase();
+        JPanel inputPanel = new JPanel(new GridLayout(4, 2));
+        inputPanel.add(new JLabel("Start Word:"));
+        startWordField = new JTextField();
+        inputPanel.add(startWordField);
+        inputPanel.add(new JLabel("End Word:"));
+        endWordField = new JTextField();
+        inputPanel.add(endWordField);
+        inputPanel.add(new JLabel("Search Algorithm:"));
+        String[] algorithms = {"UCS", "GBF", "A*"};
+        algorithmComboBox = new JComboBox<>(algorithms);
+        inputPanel.add(algorithmComboBox);
+        JButton searchButton = new JButton("Search");
+        inputPanel.add(searchButton);
+        add(inputPanel, BorderLayout.NORTH);
 
-            // Check if the start word and the end word are alphabetic
-            if (!startWord.matches("[A-Z]+") || !endWord.matches("[A-Z]+")) {
-                System.out.println("The start word and the end word must be alphabetic.");
-                return;
+        resultPane = new JTextPane(); // Initialize the text area
+        resultPane.setContentType("text/html"); // Set content type to HTML
+        resultPane.setText("<style> body { text-align: center; } </style>");
+        JScrollPane scrollPane = new JScrollPane(resultPane); // Add scroll pane to handle large text
+        add(scrollPane, BorderLayout.CENTER);
+
+        searchButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String startWord = startWordField.getText().toUpperCase();
+                String endWord = endWordField.getText().toUpperCase();
+                String searchAlgorithm = (String) algorithmComboBox.getSelectedItem();
+
+                // Get dictionary words with same length from the file and store them in a set
+                loadDictionary("src/dictionary.txt", startWord);
+
+                // Perform the search algorithm and update the result area
+                performSearch(startWord, endWord, searchAlgorithm);
+                // resultPane.setText(result);
             }
+        });
+    }
 
-            // Check if the start word and the end word length are different
-            if (startWord.length() != endWord.length()) {
-                System.out.println("The length of the start word and the end word must be the same.");
-                return;
-            }
+    private void performSearch(String startWord, String endWord, String searchAlgorithm) {
+        StringBuilder result = new StringBuilder();
 
-            // Check if the start word and the end word are already the same
-            // if (startWord.equals(endWord)) {
-            //     System.out.println("The start word and the end word are already the same.");
-            //     return;
-            // }
-
-            // Get dictionary words with same length from the file and store them in a set
-            loadDictionary("src/dictionary.txt", startWord);
-
-            // Check if the start word and the end word are in the dictionary
-            if (!dictionary.contains(startWord) || !dictionary.contains(endWord)) {
-                System.out.println("The start word or the end word is not in the dictionary.");
-                return;
-            }
-
-            long startTime = System.currentTimeMillis();
-            long endTime;
-            long executionTime;
-            Pair<Integer, List<String>> wordLadder;
-            switch (searchAlgorithm) {
-                case "UCS":
-                    UCS ucs = new UCS(endWord);
-
-                    // Create the starting node
-                    ExtendedNode startUCSNode = new ExtendedNode(startWord, null, 0);
-            
-                    // Perform the UCS search
-                    wordLadder = ucs.search(startUCSNode);
-
-                    if (!wordLadder.second.isEmpty()) {
-                        System.out.println("Explored node: " + wordLadder.first);
-                        System.out.println("UCS Ladder: " + wordLadder.second);
-                    }
-                    else {
-                        System.out.println("No ladder found using UCS.");
-                    }
-
-                    break;
-                case "GBF":
-                    GBFS gbfs = new GBFS(endWord);
-
-                    Node startGFBSNode = new Node(startWord, null);
-            
-                    // Perform the UCS search
-                    wordLadder = gbfs.search(startGFBSNode);
-
-                    if (!wordLadder.second.isEmpty()) {
-                        System.out.println("Explored node: " + wordLadder.first);
-                        System.out.println("UCS Ladder: " + wordLadder.second);
-                    }
-                    else {
-                        System.out.println("No ladder found using UCS.");
-                    }
-
-                    break;
-                case "A*":
-                    AStar astar = new AStar(endWord);
-
-                    // Create the starting node
-                    ExtendedNode startAStarNode = new ExtendedNode(startWord, null, 0);
-            
-                    // Perform the UCS search
-                    wordLadder = astar.search(startAStarNode);
-
-                    if (!wordLadder.second.isEmpty()) {
-                        System.out.println("Explored node: " + wordLadder.first);
-                        System.out.println("UCS Ladder: " + wordLadder.second);
-                    }
-                    else {
-                        System.out.println("No ladder found using UCS.");
-                    }
-                    break;
-                default:
-                    System.out.println("Invalid search algorithm.");
-                    break;
-            }
-            endTime = System.currentTimeMillis();
-            executionTime = endTime - startTime;
-            System.out.println("Execution time: " + executionTime + " milliseconds\n");
+        // Check for valid input and dictionary initialization
+        if (!isValidInput(startWord, endWord)) {
+            return;
         }
+
+        // Check if the start word and the end word are in the dictionary
+        if (!dictionary.contains(startWord) || !dictionary.contains(endWord)) {
+            return;
+        }
+
+        long startTime = System.currentTimeMillis();
+        long endTime;
+        long executionTime;
+
+        App.Pair<Integer, List<String>> wordLadder = null;
+
+        switch (searchAlgorithm) {
+            case "UCS":
+                UCS ucs = new UCS(endWord);
+                ExtendedNode startUCSNode = new ExtendedNode(startWord, null, 0);
+                wordLadder = ucs.search(startUCSNode);
+
+                break;
+            case "GBF":
+                GBFS gbfs = new GBFS(endWord);
+                Node startGFBSNode = new Node(startWord, null);
+                wordLadder = gbfs.search(startGFBSNode);
+
+                break;
+            case "A*":
+                AStar astar = new AStar(endWord);
+                ExtendedNode startAStarNode = new ExtendedNode(startWord, null, 0);
+                wordLadder = astar.search(startAStarNode);
+                
+                break;
+            // default:
+            //     result.append("Invalid search algorithm.");
+            //     break;
+        }
+
+        if (!wordLadder.getSecond().isEmpty()){
+            int size = wordLadder.getSecond().size();
+            for (int i = 0; i < size; i++) {
+                String word = wordLadder.getSecond().get(i);
+                if (i == size - 1) {
+                    result.append("<font color='green'>").append(word).append("</font>");
+                }
+                else if (i == 0) {
+                    result.append("<font color='blue'>").append(word).append("</font>");
+                }
+                else {
+                    result.append(word);
+                }
+                result.append("<br>");
+            }
+        }
+        else{
+            result.append("No ladder found.");
+        }
+
+        endTime = System.currentTimeMillis();
+        executionTime = endTime - startTime;
+        result.append("\nExecution time: ").append(executionTime).append(" milliseconds\n");
+
+        resultPane.setText(result.toString());
+    }
+
+    private boolean isValidInput(String startWord, String endWord) {
+        if (!startWord.matches("[A-Z]+") || !endWord.matches("[A-Z]+")) {
+            return false; // Alphabetic check failed
+        }
+
+        if (dictionary == null) {
+            return false; // Dictionary not initialized
+        }
+
+        if (startWord.length() != endWord.length()) {
+            return false; // Word length mismatch
+        }
+
+        return true;
     }
 
     private static void loadDictionary(String filePath, String startWord) {
@@ -126,9 +161,7 @@ public class App {
             // Check if the dictionary is empty
             if (dictionary.isEmpty()) {
                 System.out.println("The dictionary is empty.");
-                return;
-            }
-            else{
+            } else {
                 System.out.println("Dictionary length: " + dictionary.size());
             }
         } catch (FileNotFoundException e) {
@@ -137,6 +170,14 @@ public class App {
         }
     }
 
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            App app = new App(); // Create an instance of the application
+            app.setVisible(true);
+        });
+    }
+
+
     public static List<String> generateNextWords(String word) {
         List<String> nextWords = new ArrayList<>();
         for (int i = 0; i < word.length(); i++) {
@@ -144,7 +185,7 @@ public class App {
             for (char c = 'A'; c <= 'Z'; c++) {
                 chars[i] = c;
                 String newWord = new String(chars);
-                if (!newWord.equals(word) && App.dictionary.contains(newWord)) {
+                if (!newWord.equals(word) && dictionary.contains(newWord)) {
                     nextWords.add(newWord);
                 }
             }
