@@ -18,7 +18,7 @@ public class App extends JFrame {
     public App() {
         setTitle("Word Ladder Solver");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setSize(450, 400);
+        setSize(400, 400);
         setLayout(new BorderLayout());
 
         JPanel inputPanel = new JPanel(new GridBagLayout());
@@ -99,7 +99,6 @@ public class App extends JFrame {
 
                 // Perform the search algorithm and update the result area
                 performSearch(startWord, endWord, searchAlgorithm);
-                // resultPane.setText(result);
             }
         });
     }
@@ -216,7 +215,7 @@ public class App extends JFrame {
     }
 
 
-    public static List<String> generateNextWords(String word) {
+    public static List<String> getNeighbor(String word) {
         List<String> nextWords = new ArrayList<>();
         for (int i = 0; i < word.length(); i++) {
             char[] chars = word.toCharArray();

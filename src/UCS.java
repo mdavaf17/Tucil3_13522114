@@ -27,7 +27,7 @@ public class UCS {
     
             visited.add(currentNode.getWord());
     
-            for (String nextWord : App.generateNextWords(currentNode.getWord())) {
+            for (String nextWord : App.getNeighbor(currentNode.getWord())) {
                 if (!visited.contains(nextWord)) {
                     int newCost = currentNode.get_distance() + 1;
                     ExtendedNode nextNode = new ExtendedNode(nextWord, currentNode, newCost);

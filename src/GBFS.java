@@ -38,7 +38,7 @@ public class GBFS {
                 return new App.Pair<>(visited.size() + 1, Arrays.asList(currentNode.get_path_from_root().split(" ")));
             }
 
-            for (String nextWord : App.generateNextWords(currentWord)) {
+            for (String nextWord : App.getNeighbor(currentWord)) {
                 if (!visited.contains(nextWord)) {
                     Node nextNode = new Node(nextWord, currentNode);
                     prioQueue.offer(nextNode);
