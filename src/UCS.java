@@ -7,7 +7,7 @@ public class UCS {
 
     public UCS(String endWord) {
         this.endWord = endWord;
-        this.frontier = new PriorityQueue<>(Comparator.comparingInt(ExtendedNode::get_distance));
+        this.frontier = new PriorityQueue<>(Comparator.comparingInt((currentNode) -> currentNode.get_distance()));
         this.visited = new HashSet<>();
     }
 

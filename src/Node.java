@@ -20,6 +20,6 @@ public class Node {
             return this.word;
         }
         
-        return this.parent.get_path_from_root() + " -> " + this.word;
+        return this.parent.get_path_from_root() + " " + this.word;
     }
 }

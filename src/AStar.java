@@ -2,28 +2,23 @@ import java.util.*;
 
 public class AStar {
     private String endWord;
-    private PriorityQueue<ExtendedNode> frontier;
+    private PriorityQueue<ExtendedNode> prioQueue;
     private Set<String> visited;
 
     public AStar(String endWord) {
         this.endWord = endWord;
-        this.frontier = new PriorityQueue<>(Comparator.comparingInt(ExtendedNode::get_distance));
-        this.visited = new HashSet<>();
-    }
-
-    private int greedySwitchChar(ExtendedNode lastNode) {
-        String current = lastNode.getWord();
-        return hamming(current);
-    }
-
-    private int hamming(String a) {
-        int distance = 0;
-        for (int i = 0; i < a.length(); i++) {
-            if (a.charAt(i) != endWord.charAt(i)) {
-                distance++;
+        this.prioQueue = new PriorityQueue<>(Comparator.comparingInt((currentNode) -> {
+            int missChar = 0;
+            String word = currentNode.getWord();
+            for (int i = 0; i < word.length(); i++) {
+                if (word.charAt(i) != endWord.charAt(i)) {
+                    missChar++;
+                }
             }
-        }
-        return distance;
+            
+            return missChar + currentNode.get_distance();
+        }));
+        this.visited = new HashSet<>();
     }
 
     public App.Pair<Integer, List<String>> search(ExtendedNode startNode) {
@@ -31,10 +26,10 @@ public class AStar {
             return new App.Pair<>(visited.size(), Collections.emptyList());
         }
     
-        frontier.offer(startNode);
+        prioQueue.offer(startNode);
     
-        while (!frontier.isEmpty()) {
-            ExtendedNode currentNode = frontier.poll();
+        while (!prioQueue.isEmpty()) {
+            ExtendedNode currentNode = prioQueue.poll();
     
             if (currentNode.getWord().equals(endWord)) {
                 return new App.Pair<>(visited.size()+1, Arrays.asList(currentNode.get_path_from_root().split(" ")));
@@ -46,7 +41,7 @@ public class AStar {
                 if (!visited.contains(nextWord)) {
                     int newCost = currentNode.get_distance() + 1;
                     ExtendedNode nextNode = new ExtendedNode(nextWord, currentNode, newCost);
-                    frontier.offer(nextNode);
+                    prioQueue.offer(nextNode);
                 }
             }
         }

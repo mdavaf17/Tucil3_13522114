@@ -6,93 +6,107 @@ public class App {
     public static Set<String> dictionary;
 
     public static void main(String[] args) {
-        System.out.print("Input the Start Word: ");
-        String startWord = System.console().readLine().toUpperCase();
+        while (true) {
+            System.out.print("Input the Start Word: ");
+            String startWord = System.console().readLine().toUpperCase();
 
-        System.out.print("Input the End Word: ");
-        String endWord = System.console().readLine().toUpperCase();
+            System.out.print("Input the End Word: ");
+            String endWord = System.console().readLine().toUpperCase();
 
-        System.out.print("Input the Search Algorithm (UCS / GBF / A*): ");
-        String searchAlgorithm = System.console().readLine().toUpperCase();
+            System.out.print("Input the Search Algorithm (UCS / GBF / A*): ");
+            String searchAlgorithm = System.console().readLine().toUpperCase();
 
-        // Check if the start word and the end word are alphabetic
-        if (!startWord.matches("[A-Z]+") || !endWord.matches("[A-Z]+")) {
-            System.out.println("The start word and the end word must be alphabetic.");
-            return;
-        }
+            // Check if the start word and the end word are alphabetic
+            if (!startWord.matches("[A-Z]+") || !endWord.matches("[A-Z]+")) {
+                System.out.println("The start word and the end word must be alphabetic.");
+                return;
+            }
 
-        // Check if the start word and the end word length are different
-        if (startWord.length() != endWord.length()) {
-            System.out.println("The length of the start word and the end word must be the same.");
-            return;
-        }
+            // Check if the start word and the end word length are different
+            if (startWord.length() != endWord.length()) {
+                System.out.println("The length of the start word and the end word must be the same.");
+                return;
+            }
 
-        // Check if the start word and the end word are already the same
-        // if (startWord.equals(endWord)) {
-        //     System.out.println("The start word and the end word are already the same.");
-        //     return;
-        // }
+            // Check if the start word and the end word are already the same
+            // if (startWord.equals(endWord)) {
+            //     System.out.println("The start word and the end word are already the same.");
+            //     return;
+            // }
 
-        // Get dictionary words with same length from the file and store them in a set
-        loadDictionary("src/dictionary.txt", startWord);
+            // Get dictionary words with same length from the file and store them in a set
+            loadDictionary("src/dictionary.txt", startWord);
 
-        // Check if the start word and the end word are in the dictionary
-        if (!dictionary.contains(startWord) || !dictionary.contains(endWord)) {
-            System.out.println("The start word or the end word is not in the dictionary.");
-            return;
-        }
+            // Check if the start word and the end word are in the dictionary
+            if (!dictionary.contains(startWord) || !dictionary.contains(endWord)) {
+                System.out.println("The start word or the end word is not in the dictionary.");
+                return;
+            }
 
-        long startTime = System.currentTimeMillis();
-        long endTime;
-        long executionTime;
-        switch (searchAlgorithm) {
-            case "UCS":
-                UCS ucs = new UCS(endWord);
+            long startTime = System.currentTimeMillis();
+            long endTime;
+            long executionTime;
+            Pair<Integer, List<String>> wordLadder;
+            switch (searchAlgorithm) {
+                case "UCS":
+                    UCS ucs = new UCS(endWord);
 
-                // Create the starting node
-                ExtendedNode startNode = new ExtendedNode(startWord, null, 0);
-        
-                // Perform the UCS search
-                Pair<Integer, List<String>> ucsLadder = ucs.search(startNode);
+                    // Create the starting node
+                    ExtendedNode startUCSNode = new ExtendedNode(startWord, null, 0);
+            
+                    // Perform the UCS search
+                    wordLadder = ucs.search(startUCSNode);
 
-                if (!ucsLadder.second.isEmpty()) {
-                    System.out.println("Explored node: " + ucsLadder.first);
-                    System.out.println("UCS Ladder: " + ucsLadder.second);
-                }
-                else {
-                    System.out.println("No ladder found using UCS.");
-                }
-                
-                endTime = System.currentTimeMillis();
-                executionTime = endTime - startTime;
-                System.out.println("Execution time: " + executionTime + " milliseconds");
+                    if (!wordLadder.second.isEmpty()) {
+                        System.out.println("Explored node: " + wordLadder.first);
+                        System.out.println("UCS Ladder: " + wordLadder.second);
+                    }
+                    else {
+                        System.out.println("No ladder found using UCS.");
+                    }
 
-                break;
-            case "GBF":
-                GBFS gbfs = new GBFS(endWord);
-        
-                // Perform the UCS search
-                Pair<Integer, List<String>> gbfsLadder = gbfs.search(startWord);
+                    break;
+                case "GBF":
+                    GBFS gbfs = new GBFS(endWord);
 
-                if (!gbfsLadder.second.isEmpty()) {
-                    System.out.println("Explored node: " + gbfsLadder.first);
-                    System.out.println("UCS Ladder: " + gbfsLadder.second);
-                }
-                else {
-                    System.out.println("No ladder found using UCS.");
-                }
-                
-                endTime = System.currentTimeMillis();
-                executionTime = endTime - startTime;
-                System.out.println("Execution time: " + executionTime + " milliseconds");
+                    Node startGFBSNode = new Node(startWord, null);
+            
+                    // Perform the UCS search
+                    wordLadder = gbfs.search(startGFBSNode);
 
-                break;
-            case "A*":
-                    
-                break;
-            default:
-                System.out.println("Invalid search algorithm.");
-                break;
+                    if (!wordLadder.second.isEmpty()) {
+                        System.out.println("Explored node: " + wordLadder.first);
+                        System.out.println("UCS Ladder: " + wordLadder.second);
+                    }
+                    else {
+                        System.out.println("No ladder found using UCS.");
+                    }
+
+                    break;
+                case "A*":
+                    AStar astar = new AStar(endWord);
+
+                    // Create the starting node
+                    ExtendedNode startAStarNode = new ExtendedNode(startWord, null, 0);
+            
+                    // Perform the UCS search
+                    wordLadder = astar.search(startAStarNode);
+
+                    if (!wordLadder.second.isEmpty()) {
+                        System.out.println("Explored node: " + wordLadder.first);
+                        System.out.println("UCS Ladder: " + wordLadder.second);
+                    }
+                    else {
+                        System.out.println("No ladder found using UCS.");
+                    }
+                    break;
+                default:
+                    System.out.println("Invalid search algorithm.");
+                    break;
+            }
+            endTime = System.currentTimeMillis();
+            executionTime = endTime - startTime;
+            System.out.println("Execution time: " + executionTime + " milliseconds\n");
         }
     }
 
