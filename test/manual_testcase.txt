@@ -1,0 +1,23 @@
+# Test Case 1
+Start: HELLO
+End: STIMA
+
+# Test Case 2
+Start: OTHERS
+End: HEROES
+
+# Test Case 3
+Start: EAST
+End: WEST
+
+# Test Case 4
+Start: GRASS
+End: ROOTS
+
+# Test Case 5
+Start: CHAPTER
+End: HOARDED
+
+# Test Case 6
+Start: ATLASES
+End: CABARET

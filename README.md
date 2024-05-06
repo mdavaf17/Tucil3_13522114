@@ -9,7 +9,7 @@ Small Assignment 3 IF2211 Algorithm Strategy Semester II 2023/2024 Solving Word 
 - [Features](#features)
 - [Setup](#setup)
 - [Usage](#usage)
-- [Contact](#contact)
+- [Author](#author)
 
 ## General Information
 
@@ -79,3 +79,8 @@ rm -rf bin/*
 # Reference
 
 The dictionary utilized for testing course compatibility in this program is sourced from the following  [repository](https://docs.oracle.com/javase/tutorial/collections/interfaces/examples/dictionary.txt).
+
+# Author
+| No. | Name                           | NIM |
+|-----|--------------------------------|------------|
+| 1.  | Muhammad Dava Fathurrahman      | 13522114   |
