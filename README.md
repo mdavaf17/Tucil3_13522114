@@ -25,8 +25,8 @@ How to play?
 
 ## Technologies Used
 
-- java 21 2023-09-19 LTS
-- Java(TM) SE Runtime Environment (build 21+35-LTS-2513)
+- Java version "22.0.1" 2024-04-16
+- Java(TM) SE Runtime Environment (build 22.0.1+8-16)
 
 ## Features
 
@@ -36,7 +36,7 @@ How to play?
 
 ## Requirements
 
-- java version "22.0.1" 2024-04-16
+- Java version "22.0.1" 2024-04-16
 - Java(TM) SE Runtime Environment (build 22.0.1+8-16)
 - Windows - Linux
 
